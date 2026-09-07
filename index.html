@@ -257,22 +257,26 @@ async function procesarSimulacion(event) {
       });
 
       const data = await response.json();
-      
-      if (data.id) {
-        statusDiv.innerHTML = '<p style="color: green; font-weight: bold;">✅ ¡Simulación iniciada! Redirigiendo a WhatsApp para enviarte el resultado...</p>';
-        setTimeout(() => {
-          window.location.href = "https://wa.me/573118952907?text=Hola,%20acabo%20de%20generar%20una%20simulaci%C3%B3n%20en%20la%20p%C3%A1gina%20web";
-        }, 2000);
+   if (data.outputUrl) {
+        statusDiv.innerHTML = `
+          <div style="margin-top: 20px; text-align: center;">
+            <p style="color: green; font-weight: bold; font-size: 1.1rem;">✅ ¡Tu render está listo!</p>
+            <img src="${data.outputUrl}" alt="Render IA" style="max-width: 100%; border-radius: 12px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);" />
+            <p style="margin-top: 15px;">¿Te gusta este diseño a medida?</p>
+            <a href="https://wa.me/573118952907?text=Hola,%20acabo%20de%20generar%20un%20render%20en%20la%20pagina%20y%20quiero%20cotizar" class="btn-ws" style="text-decoration: none; display: inline-block;">
+              💬 Cotizar por WhatsApp
+            </a>
+          </div>
+        `;
       } else {
-        statusDiv.innerHTML = '<p style="color: #2d1810;">⚠️ Conectando directamente con WhatsApp...</p>';
+        statusDiv.innerHTML = '<p style="color: #2d1810;">⚠️ No se pudo procesar la imagen. Redirigiendo a WhatsApp...</p>';
         setTimeout(() => {
-          window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20la%20foto%20de%20mi%20espacio%20para%20una%20simulaci%C3%B3n";
+          window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
         }, 2000);
       }
     } catch (err) {
-      window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20la%20foto%20de%20mi%20espacio%20para%20una%20simulaci%C3%B3n";
+      window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
     }
-  };
 }
 </script>
 </body>
