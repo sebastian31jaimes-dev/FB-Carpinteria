@@ -148,14 +148,20 @@
     <div class="container">
         
         <!-- Módulo IA / Simulador -->
-        <div class="card">
-            <h2>📸 Simula tu espacio antes de fabricar</h2>
-            <p>Envíanos la foto de tu espacio o pared vacía por WhatsApp y te ayudaremos a proyectar la mejor opción de diseño a medida.</p>
-            <br>
-            <a href="https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20la%20foto%20de%20mi%20espacio%20para%20una%20simulaci%C3%B3n" class="btn-ws" target="_blank">
-                💬 Solicitar Simulación por WhatsApp
-            </a>
-        </div>
+      <div class="card">
+        <h2>📸 Simula tu espacio antes de fabricar</h2>
+        <p>Sube la foto de tu pared o habitación vacía para procesar la propuesta en 3D con IA:</p>
+        
+        <form onsubmit="procesarSimulacion(event)" style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px;">
+          <input type="file" id="fotoCliente" accept="image/*" required style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
+          
+          <button type="submit" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
+            ✨ Generar Simulación Visual
+          </button>
+        </form>
+
+        <div id="estadoSimulacion" style="margin-top: 15px;"></div>
+      </div>
 
         <!-- Galería Ampliada de Proyectos Reales -->
         <h2 style="color: var(--primary);">Nuestros Proyectos Realizados</h2>
