@@ -222,6 +222,52 @@
     <footer>
         <p>FB Carpintería Moderna - Carrera 75 #71-71, Barrio Boyacá Real, Bogotá, Colombia</p>
     </footer>
+<script>
+async function procesarSimulacion(event) {
+  event.preventDefault();
+  const fileInput = document.getElementById('fotoCliente');
+  const statusDiv = document.getElementById('estadoSimulacion');
+  
+  if (!fileInput || !fileInput.files[0]) {
+    alert('Por favor selecciona una imagen primero.');
+    return;
+  }
 
+  statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando simulación con IA... Esto puede tomar unos segundos.</p>';
+
+  const reader = new FileReader();
+  reader.readAsDataURL(fileInput.files[0]);
+  reader.onload = async function () {
+    const base64Image = reader.result;
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: base64Image,
+          prompt: "modern custom wooden furniture, interior architecture, photorealistic"
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.id) {
+        statusDiv.innerHTML = '<p style="color: green; font-weight: bold;">✅ ¡Simulación iniciada! Redirigiendo a WhatsApp para enviarte el resultado...</p>';
+        setTimeout(() => {
+          window.location.href = "https://wa.me/573118952907?text=Hola,%20acabo%20de%20generar%20una%20simulaci%C3%B3n%20en%20la%20p%C3%A1gina%20web";
+        }, 2000);
+      } else {
+        statusDiv.innerHTML = '<p style="color: #2d1810;">⚠️ Conectando directamente con WhatsApp...</p>';
+        setTimeout(() => {
+          window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20la%20foto%20de%20mi%20espacio%20para%20una%20simulaci%C3%B3n";
+        }, 2000);
+      }
+    } catch (err) {
+      window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20la%20foto%20de%20mi%20espacio%20para%20una%20simulaci%C3%B3n";
+    }
+  };
+}
+</script>
 </body>
 </html>
