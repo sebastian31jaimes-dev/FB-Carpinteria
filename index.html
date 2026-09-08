@@ -267,7 +267,7 @@
         const base64Image = reader.result;
 
         try {
-          const response = await fetch('/api/generate', {
+       const response = await fetch('https://fb-carpinteria.vercel.app/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
