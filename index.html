@@ -239,10 +239,21 @@
         return;
       }
 
+      const file = fileInput.files[0];
+      if (file.size > 4.5 * 1024 * 1024) {
+        alert('La imagen es demasiado grande. Por favor sube una foto menor a 4.5MB.');
+        return;
+      }
+
       statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto tomará unos 15-20 segundos.</p>';
 
       const reader = new FileReader();
-      reader.readAsDataURL(fileInput.files[0]);
+      reader.readAsDataURL(file);
+      
+      reader.onerror = function() {
+        alert('Error al leer el archivo en tu navegador. Intenta con una imagen JPG o PNG.');
+      };
+
       reader.onload = async function () {
         const base64Image = reader.result;
 
@@ -258,7 +269,7 @@
 
           const data = await response.json();
           
-          if (data.outputUrl) {
+          if (response.ok && data.outputUrl) {
             statusDiv.innerHTML = `
               <div style="margin-top: 20px; text-align: center;">
                 <p style="color: green; font-weight: bold; font-size: 1.1rem;">✅ ¡Tu render está listo!</p>
@@ -270,16 +281,10 @@
               </div>
             `;
           } else {
-            statusDiv.innerHTML = `<p style="color: #2d1810;">⚠️ No se pudo procesar la simulación (${data.error || 'error desconocido'}). Redirigiendo a atención directa...</p>`;
-            setTimeout(() => {
-              window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
-            }, 3000);
+            statusDiv.innerHTML = `<p style="color: #d9534f; font-weight: bold;">⚠️ Error del servidor: ${data.error || 'No se pudo generar la imagen'}.</p>`;
           }
         } catch (err) {
-          statusDiv.innerHTML = '<p style="color: red;">Error de conexión. Redirigiendo a WhatsApp...</p>';
-          setTimeout(() => {
-            window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
-          }, 2000);
+          statusDiv.innerHTML = `<p style="color: red; font-weight: bold;">Error de red: ${err.message}</p>`;
         }
       };
     }
