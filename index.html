@@ -148,17 +148,17 @@
     <div class="container">
         
         <!-- Módulo IA / Simulador -->
-        <div class="card">
+  <div class="card">
             <h2>📸 Simula tu espacio antes de fabricar</h2>
             <p>Sube la foto de tu pared o habitación vacía para procesar la propuesta en 3D con IA:</p>
             
-            <form id="formSimulador" style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px;">
-              <input type="file" id="fotoCliente" accept="image/*" required style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
+            <div id="formSimulador" style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px;">
+              <input type="file" id="fotoCliente" accept="image/*" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
               
-              <button type="submit" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
+              <button type="button" onclick="ejecutarSimulacion()" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
                 ✨ Generar Simulación Visual
               </button>
-            </form>
+            </div>
 
             <div id="estadoSimulacion" style="margin-top: 15px;"></div>
         </div>
@@ -229,19 +229,17 @@
         <p>FB Carpintería Moderna - Carrera 75 #71-71, Barrio Boyacá Real, Bogotá, Colombia</p>
     </footer>
 
-    <script>
-    document.getElementById('formSimulador').addEventListener('submit', async function(event) {
-      event.preventDefault(); // Detiene la recarga automática de la página
-      
+<script>
+    async function ejecutarSimulacion() {
       const fileInput = document.getElementById('fotoCliente');
       const statusDiv = document.getElementById('estadoSimulacion');
       
       if (!fileInput || !fileInput.files[0]) {
-        alert('Por favor selecciona una imagen primero.');
+        alert('Por favor selecciona una imagen de tu espacio primero.');
         return;
       }
 
-      statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto puede tomar unos segundos.</p>';
+      statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto tomará unos 15-20 segundos.</p>';
 
       const reader = new FileReader();
       reader.readAsDataURL(fileInput.files[0]);
@@ -254,7 +252,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               imageUrl: base64Image,
-              prompt: "modern custom wooden furniture, interior architecture, photorealistic"
+              prompt: "modern custom wooden furniture, interior architecture, high quality, photorealistic"
             })
           });
 
@@ -272,16 +270,19 @@
               </div>
             `;
           } else {
-            statusDiv.innerHTML = '<p style="color: #2d1810;">⚠️ No se pudo procesar la imagen. Redirigiendo a WhatsApp...</p>';
+            statusDiv.innerHTML = `<p style="color: #2d1810;">⚠️ No se pudo procesar la simulación (${data.error || 'error desconocido'}). Redirigiendo a atención directa...</p>`;
             setTimeout(() => {
               window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
-            }, 2000);
+            }, 3000);
           }
         } catch (err) {
-          window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
+          statusDiv.innerHTML = '<p style="color: red;">Error de conexión. Redirigiendo a WhatsApp...</p>';
+          setTimeout(() => {
+            window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
+          }, 2000);
         }
       };
-    });
+    }
     </script>
 </body>
 </html>
