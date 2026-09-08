@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Falta la API Key de Replicate' });
     }
 
-    // Petición a la API de Replicate
+    // Petición a la API de Replicate usando el hash público de SDXL
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        version: "854e8727697a057c525cdb45ab037f64ecca770a1769cc522874bc8656107843", // Modelo de control/restyling
+        version: "39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
         input: {
           image: imageUrl,
           prompt: prompt || "modern custom wooden furniture, interior architecture, high quality, photorealistic"
