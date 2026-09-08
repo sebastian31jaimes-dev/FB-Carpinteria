@@ -1,5 +1,19 @@
 export default async function handler(req, res) {
-  // Asegurar cabeceras CORS y método POST
+  // Habilitar CORS para permitir peticiones desde cualquier origen (GitHub Pages)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  // Manejar la petición preflight de CORS
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
@@ -8,50 +22,55 @@ export default async function handler(req, res) {
     const { imageUrl, prompt } = req.body;
 
     if (!process.env.REPLICATE_API_TOKEN) {
-      return res.status(500).json({ error: 'Token de Replicate no configurado' });
+      return res.status(500).json({ error: 'Falta la API Key de Replicate' });
     }
 
-    // Usar el modelo SDXL optimizado para arquitectura e interiorismo
-    const response = await fetch('https://api.replicate.com/v1/predictions', {
-      method: 'POST',
+    // Petición a la API de Replicate
+    const response = await fetch("https://api.replicate.com/v1/predictions", {
+      method: "POST",
       headers: {
-        'Authorization': `Token ${process.env.REPLICATE_API_TOKEN}`,
-        'Content-Type': 'application/json',
+        "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        version: "39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+        version: "854e8727697a057c525cdb45ab037f64ecca770a1769cc522874bc8656107843", // Modelo de control/restyling
         input: {
           image: imageUrl,
-          prompt: prompt || "modern custom wooden furniture, high quality, interior architecture, photorealistic",
-          prompt_strength: 0.8
+          prompt: prompt || "modern custom wooden furniture, interior architecture, high quality, photorealistic"
         }
       }),
     });
 
-    const data = await response.json();
+    const prediction = await response.json();
 
-    if (response.status !== 201 && response.status !== 200) {
-      return res.status(500).json({ error: data.detail || 'Error en Replicate' });
+    if (!response.ok) {
+      return res.status(500).json({ error: prediction.detail || 'Error al iniciar predicción en Replicate' });
     }
 
-    // Polling / Esperar resultado
-    const predictionId = data.id;
-    let predictionData = data;
-
-    while (predictionData.status !== 'succeeded' && predictionData.status !== 'failed') {
-      await new Promise(resolve => setTimeout(resolve, 2500));
-      const checkRes = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
-        headers: { 'Authorization': `Token ${process.env.REPLICATE_API_TOKEN}` }
-      });
-      predictionData = await checkRes.json();
+    // Polling hasta que la imagen esté generada
+    let predictionResult = prediction;
+    while (predictionResult.status !== "succeeded" && predictionResult.status !== "failed") {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const checkResponse = await fetch(
+        `https://api.replicate.com/v1/predictions/${predictionResult.id}`,
+        {
+          headers: {
+            "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      predictionResult = await checkResponse.json();
     }
 
-    if (predictionData.status === 'succeeded') {
-      return res.status(200).json({ outputUrl: predictionData.output[0] });
+    if (predictionResult.status === "succeeded") {
+      const outputUrl = Array.isArray(predictionResult.output)
+        ? predictionResult.output[0]
+        : predictionResult.output;
+      return res.status(200).json({ outputUrl });
     } else {
-      return res.status(500).json({ error: 'La generación falló en el servidor.' });
+      return res.status(500).json({ error: 'La generación de la imagen falló en Replicate.' });
     }
-
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
