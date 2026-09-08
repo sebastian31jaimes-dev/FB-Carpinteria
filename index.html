@@ -64,6 +64,12 @@
         .btn-ws:hover {
             transform: scale(1.05);
         }
+        .btn-ws:disabled {
+            background-color: #cccccc !important;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -148,16 +154,16 @@
     <div class="container">
         
         <!-- Módulo IA / Simulador -->
-  <div class="card">
+        <div class="card">
             <h2>📸 Simula tu espacio antes de fabricar</h2>
             <p>Sube la foto de tu pared o habitación vacía para procesar la propuesta en 3D con IA:</p>
             
             <div id="formSimulador" style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px;">
-            <input type="file" id="fotoCliente" accept="image/png, image/jpeg, image/jpg, image/webp" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
+                <input type="file" id="fotoCliente" accept="image/png, image/jpeg, image/jpg, image/webp" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
               
-              <button type="button" onclick="ejecutarSimulacion()" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
-                ✨ Generar Simulación Visual
-              </button>
+                <button type="button" id="btnSimular" onclick="ejecutarSimulacion()" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
+                    ✨ Generar Simulación Visual
+                </button>
             </div>
 
             <div id="estadoSimulacion" style="margin-top: 15px;"></div>
@@ -221,7 +227,7 @@
     </div>
 
     <!-- Botón Flotante a WhatsApp -->
-    <a href="https://wa.me/573118952907?text=Hola,%20vengo%20desde%20la%20p%C3%A1gina%20web" class="ws-float" target="_blank">
+    <a href="https://wa.me/573118952907?text=Hola,%20vengo%20desde%20la%20p%C3%A1gina%20web" class="ws-float" target="_blank" rel="noopener noreferrer">
         💬
     </a>
 
@@ -229,10 +235,11 @@
         <p>FB Carpintería Moderna - Carrera 75 #71-71, Barrio Boyacá Real, Bogotá, Colombia</p>
     </footer>
 
-<script>
+    <script>
     async function ejecutarSimulacion() {
       const fileInput = document.getElementById('fotoCliente');
       const statusDiv = document.getElementById('estadoSimulacion');
+      const btnSimular = document.getElementById('btnSimular');
       
       if (!fileInput || !fileInput.files[0]) {
         alert('Por favor selecciona una imagen de tu espacio primero.');
@@ -245,12 +252,15 @@
         return;
       }
 
+      // Bloquear botón durante el procesamiento
+      btnSimular.disabled = true;
       statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto tomará unos 15-20 segundos.</p>';
 
       const reader = new FileReader();
 
       reader.onerror = function() {
         alert('Error al leer el archivo en tu navegador. Intenta con una imagen JPG o PNG.');
+        btnSimular.disabled = false;
       };
 
       reader.onload = async function () {
@@ -284,6 +294,8 @@
           }
         } catch (err) {
           statusDiv.innerHTML = `<p style="color: red; font-weight: bold;">Error de red: ${err.message}</p>`;
+        } finally {
+          btnSimular.disabled = false;
         }
       };
 
