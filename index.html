@@ -148,20 +148,20 @@
     <div class="container">
         
         <!-- Módulo IA / Simulador -->
-   <div class="card">
-        <h2>📸 Simula tu espacio antes de fabricar</h2>
-        <p>Sube la foto de tu pared o habitación vacía para procesar la propuesta en 3D con IA:</p>
-        
-        <form id="formSimulador" style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px;">
-          <input type="file" id="fotoCliente" accept="image/*" required style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
-          
-          <button type="submit" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
-            ✨ Generar Simulación Visual
-          </button>
-        </form>
+        <div class="card">
+            <h2>📸 Simula tu espacio antes de fabricar</h2>
+            <p>Sube la foto de tu pared o habitación vacía para procesar la propuesta en 3D con IA:</p>
+            
+            <form id="formSimulador" style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px;">
+              <input type="file" id="fotoCliente" accept="image/*" required style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
+              
+              <button type="submit" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
+                ✨ Generar Simulación Visual
+              </button>
+            </form>
 
-        <div id="estadoSimulacion" style="margin-top: 15px;"></div>
-      </div>
+            <div id="estadoSimulacion" style="margin-top: 15px;"></div>
+        </div>
 
         <!-- Galería Ampliada de Proyectos Reales -->
         <h2 style="color: var(--primary);">Nuestros Proyectos Realizados</h2>
@@ -228,109 +228,60 @@
     <footer>
         <p>FB Carpintería Moderna - Carrera 75 #71-71, Barrio Boyacá Real, Bogotá, Colombia</p>
     </footer>
-<script>
-async function procesarSimulacion(event) {
-  event.preventDefault();
-  const fileInput = document.getElementById('fotoCliente');
-  const statusDiv = document.getElementById('estadoSimulacion');
-  
-  if (!fileInput || !fileInput.files[0]) {
-    alert('Por favor selecciona una imagen primero.');
-    return;
-  }
 
-  statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando simulación con IA... Esto puede tomar unos segundos.</p>';
-
-  const reader = new FileReader();
-  reader.readAsDataURL(fileInput.files[0]);
-  reader.onload = async function () {
-    const base64Image = reader.result;
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageUrl: base64Image,
-          prompt: "modern custom wooden furniture, interior architecture, photorealistic"
-        })
-      });
-
-      const data = await response.json();
-   if (data.outputUrl) {
-        statusDiv.innerHTML = `
-          <div style="margin-top: 20px; text-align: center;">
-            <p style="color: green; font-weight: bold; font-size: 1.1rem;">✅ ¡Tu render está listo!</p>
-            <img src="${data.outputUrl}" alt="Render IA" style="max-width: 100%; border-radius: 12px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);" />
-            <p style="margin-top: 15px;">¿Te gusta este diseño a medida?</p>
-            <a href="https://wa.me/573118952907?text=Hola,%20acabo%20de%20generar%20un%20render%20en%20la%20pagina%20y%20quiero%20cotizar" class="btn-ws" style="text-decoration: none; display: inline-block;">
-              💬 Cotizar por WhatsApp
-            </a>
-          </div>
-        `;
-      } else {
-        statusDiv.innerHTML = '<p style="color: #2d1810;">⚠️ No se pudo procesar la imagen. Redirigiendo a WhatsApp...</p>';
-        setTimeout(() => {
-          window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
-        }, 2000);
-      }
-    } catch (err) {
-      window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
-    }
-}
-<script>
-document.getElementById('formSimulador').addEventListener('submit', async function(event) {
-  event.preventDefault();
-  
-  const fileInput = document.getElementById('fotoCliente');
-  const statusDiv = document.getElementById('estadoSimulacion');
-  
-  if (!fileInput || !fileInput.files[0]) {
-    alert('Por favor selecciona una imagen primero.');
-    return;
-  }
-
-  statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto puede tomar unos segundos.</p>';
-
-  const reader = new FileReader();
-  reader.readAsDataURL(fileInput.files[0]);
-  reader.onload = async function () {
-    const base64Image = reader.result;
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageUrl: base64Image,
-          prompt: "modern custom wooden furniture, interior architecture, photorealistic"
-        })
-      });
-
-      const data = await response.json();
+    <script>
+    document.getElementById('formSimulador').addEventListener('submit', async function(event) {
+      event.preventDefault(); // Detiene la recarga automática de la página
       
-      if (data.outputUrl) {
-        statusDiv.innerHTML = `
-          <div style="margin-top: 20px; text-align: center;">
-            <p style="color: green; font-weight: bold; font-size: 1.1rem;">✅ ¡Tu render está listo!</p>
-            <img src="${data.outputUrl}" alt="Render IA" style="max-width: 100%; border-radius: 12px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);" />
-            <p style="margin-top: 15px;">¿Te gusta este diseño a medida?</p>
-            <a href="https://wa.me/573118952907?text=Hola,%20acabo%20de%20generar%20un%20render%20en%20la%20pagina%20y%20quiero%20cotizar" class="btn-ws" style="text-decoration: none; display: inline-block;">
-              💬 Cotizar por WhatsApp
-            </a>
-          </div>
-        `;
-      } else {
-        statusDiv.innerHTML = '<p style="color: #2d1810;">⚠️ No se pudo procesar la imagen. Redirigiendo a WhatsApp...</p>';
-        setTimeout(() => {
-          window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
-        }, 2000);
+      const fileInput = document.getElementById('fotoCliente');
+      const statusDiv = document.getElementById('estadoSimulacion');
+      
+      if (!fileInput || !fileInput.files[0]) {
+        alert('Por favor selecciona una imagen primero.');
+        return;
       }
-    } catch (err) {
-      window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
-    }
-  };
-});
-</script>
+
+      statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto puede tomar unos segundos.</p>';
+
+      const reader = new FileReader();
+      reader.readAsDataURL(fileInput.files[0]);
+      reader.onload = async function () {
+        const base64Image = reader.result;
+
+        try {
+          const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imageUrl: base64Image,
+              prompt: "modern custom wooden furniture, interior architecture, photorealistic"
+            })
+          });
+
+          const data = await response.json();
+          
+          if (data.outputUrl) {
+            statusDiv.innerHTML = `
+              <div style="margin-top: 20px; text-align: center;">
+                <p style="color: green; font-weight: bold; font-size: 1.1rem;">✅ ¡Tu render está listo!</p>
+                <img src="${data.outputUrl}" alt="Render IA" style="max-width: 100%; border-radius: 12px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);" />
+                <p style="margin-top: 15px;">¿Te gusta este diseño a medida?</p>
+                <a href="https://wa.me/573118952907?text=Hola,%20acabo%20de%20generar%20un%20render%20en%20la%20pagina%20y%20quiero%20cotizar" class="btn-ws" style="text-decoration: none; display: inline-block;">
+                  💬 Cotizar por WhatsApp
+                </a>
+              </div>
+            `;
+          } else {
+            statusDiv.innerHTML = '<p style="color: #2d1810;">⚠️ No se pudo procesar la imagen. Redirigiendo a WhatsApp...</p>';
+            setTimeout(() => {
+              window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
+            }, 2000);
+          }
+        } catch (err) {
+          window.location.href = "https://wa.me/573118952907?text=Hola,%20quiero%20enviar%20mi%20foto%20para%20una%20simulacion";
+        }
+      };
+    });
+    </script>
 </body>
 </html>
