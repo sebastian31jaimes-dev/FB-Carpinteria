@@ -248,8 +248,7 @@
       statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto tomará unos 15-20 segundos.</p>';
 
       const reader = new FileReader();
-      reader.readAsDataURL(file);
-      
+
       reader.onerror = function() {
         alert('Error al leer el archivo en tu navegador. Intenta con una imagen JPG o PNG.');
       };
@@ -287,6 +286,8 @@
           statusDiv.innerHTML = `<p style="color: red; font-weight: bold;">Error de red: ${err.message}</p>`;
         }
       };
+
+      reader.readAsDataURL(file);
     }
     </script>
 </body>
