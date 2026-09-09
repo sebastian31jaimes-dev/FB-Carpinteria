@@ -153,20 +153,31 @@
 
     <div class="container">
         
-        <!-- Módulo IA / Simulador -->
+  <!-- Módulo IA / Simulador -->
         <div class="card">
             <h2>📸 Simula tu espacio antes de fabricar</h2>
-            <p>Sube la foto de tu pared o habitación vacía para procesar la propuesta en 3D con IA:</p>
+            <p>Sube la foto de tu espacio e indica qué mueble deseas visualizar en 3D:</p>
             
             <div id="formSimulador" style="display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 15px;">
-                <input type="file" id="fotoCliente" accept="image/png, image/jpeg, image/jpg, image/webp" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 300px;" />
+                <input type="file" id="fotoCliente" accept="image/png, image/jpeg, image/jpg, image/webp" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 320px;" />
               
+                <!-- Menú de selección de mueble -->
+                <select id="tipoMueble" style="padding: 12px; border: 1px solid #ccc; border-radius: 6px; width: 100%; max-width: 320px; font-size: 1rem; background: white; cursor: pointer;">
+                    <option value="cocina">🍳 Cocina Integral Moderna</option>
+                    <option value="closet">👔 Closet o Vestidor a Medida</option>
+                    <option value="centro_tv">📺 Centro de Entretenimiento / TV</option>
+                    <option value="bano">diet Mueble Flotante para Baño</option>
+                    <option value="escritorio">📚 Biblioteca o Escritorio</option>
+                    <option value="mueble_general">🪵 Mueble Arquitectónico en Madera</option>
+                </select>
+
                 <button type="button" id="btnSimular" onclick="ejecutarSimulacion()" class="btn-ws" style="border: none; cursor: pointer; font-size: 16px;">
                     ✨ Generar Simulación Visual
                 </button>
             </div>
 
             <div id="estadoSimulacion" style="margin-top: 15px;"></div>
+        </div>
         </div>
 
         <!-- Galería Ampliada de Proyectos Reales -->
@@ -235,9 +246,10 @@
         <p>FB Carpintería Moderna - Carrera 75 #71-71, Barrio Boyacá Real, Bogotá, Colombia</p>
     </footer>
 
-    <script>
+  <script>
     async function ejecutarSimulacion() {
       const fileInput = document.getElementById('fotoCliente');
+      const tipoMuebleSelect = document.getElementById('tipoMueble');
       const statusDiv = document.getElementById('estadoSimulacion');
       const btnSimular = document.getElementById('btnSimular');
       
@@ -252,7 +264,17 @@
         return;
       }
 
-      // Bloquear botón durante el procesamiento
+      const promptsMap = {
+        cocina: "modern custom wooden kitchen cabinet with countertops, sleek architectural design, interior architecture, high quality, photorealistic",
+        closet: "modern custom wooden wardrobe closet, elegant shelving, interior architecture, high quality, photorealistic",
+        centro_tv: "modern wooden TV wall unit floating cabinet with LED lighting, interior architecture, high quality, photorealistic",
+        bano: "modern floating wooden bathroom vanity cabinet, interior architecture, high quality, photorealistic",
+        escritorio: "modern wooden home office desk and bookshelf wall unit, interior architecture, high quality, photorealistic",
+        mueble_general: "modern custom wooden furniture, interior architecture, high quality, photorealistic"
+      };
+
+      const promptSeleccionado = promptsMap[tipoMuebleSelect.value] || promptsMap.mueble_general;
+
       btnSimular.disabled = true;
       statusDiv.innerHTML = '<p style="color: #2d1810; font-weight: bold;">⏳ Procesando tu simulación con IA... Esto tomará unos 15-20 segundos.</p>';
 
@@ -267,12 +289,12 @@
         const base64Image = reader.result;
 
         try {
-       const response = await fetch('https://fb-carpinteria.vercel.app/api/generate', {
+          const response = await fetch('https://fb-carpinteria.vercel.app/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               imageUrl: base64Image,
-              prompt: "modern custom wooden furniture, interior architecture, high quality, photorealistic"
+              prompt: promptSeleccionado
             })
           });
 
